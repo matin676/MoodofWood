@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <style name="MyRounded.MaterialComponents.MaterialAlertDialog" parent="@style/AppTheme">
+        <item name="android:textColor">@color/yellow_700</item>
+        <item name="android:fontFamily">@font/ubuntu_medium</item>
+        <item name="dialogTheme">@android:anim/fade_in</item>
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerRadius">15dp</item>
+        <item name="dialogCornerRadius">15dp</item>
+        <item name="cornerSize">30dp</item>
+    </style>
+</resources>

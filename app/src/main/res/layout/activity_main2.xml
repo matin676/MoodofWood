@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity2">
+
+    <ImageView
+        android:layout_width="350dp"
+        android:layout_height="565dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="25dp"
+        app:srcCompat="@drawable/logo_png" />
+
+    <ProgressBar
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="220dp"
+        android:layout_height="10dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="50dp"
+        android:indeterminate="true"
+        android:foregroundTintMode="screen"
+        android:foregroundTint="@color/yellow_700"
+        android:max="100"
+        android:progress="0" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="35dp"
+        android:gravity="center|center_horizontal"
+        android:textColor="#C9C9C9"
+        android:fontFamily="@font/ubuntu_medium"
+        android:text="Since 1999\nCopyright©MoodofWood." />
+</LinearLayout>

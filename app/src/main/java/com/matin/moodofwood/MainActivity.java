@@ -11,8 +11,10 @@ import android.app.Service;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PixelFormat;
+import android.media.VolumeShaper;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -31,7 +33,10 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.DownloadListener;
+import android.webkit.JavascriptInterface;
+import android.webkit.JsResult;
 import android.webkit.URLUtil;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
@@ -54,7 +59,6 @@ import com.karumi.dexter.listener.single.PermissionListener;
 public class MainActivity extends AppCompatActivity {
 
     WebView webView;
-    private String webUrl = "https://moodofwood.in";
     ProgressBar progressBarWeb;
 //    ProgressDialog progressDialog;
     RelativeLayout relativeLayout;
@@ -80,6 +84,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         webView = (WebView) findViewById(R.id.myWebView);
+        WebSettings webSettings = webView.getSettings();
         progressBarWeb = (ProgressBar) findViewById(R.id.progressBar);
 //        progressDialog = new ProgressDialog(this);
 //        progressDialog.setMessage("Loading Please Wait");
@@ -88,34 +93,29 @@ public class MainActivity extends AppCompatActivity {
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefreshLayout);
 
         swipeRefreshLayout.setColorSchemeColors(Color.BLUE,Color.YELLOW,Color.GREEN);
-        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                webView.reload();
-            }
-        });
+        swipeRefreshLayout.setOnRefreshListener(() -> webView.reload());
 
-        if(savedInstanceState != null){
-            webView.restoreState(savedInstanceState);
-        }else {
-            webView.getSettings().setJavaScriptEnabled(true);
-            webView.getSettings().setLoadsImagesAutomatically(true);
-            webView.getSettings().setLayoutAlgorithm(WebSettings.LayoutAlgorithm.NARROW_COLUMNS);
-            webView.getSettings().setLoadWithOverviewMode(true);
-            webView.getSettings().setUseWideViewPort(true);
-            webView.getSettings().setDomStorageEnabled(true);
-            webView.getSettings().setAllowFileAccess(true);
-            webView.getSettings().setEnableSmoothTransition(true);
-            webView.getSettings().setSavePassword(true);
-            webView.getSettings().setSaveFormData(true);
-            webView.getSettings().setAppCacheEnabled(true);
-            webView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
-            webView.getSettings().setCacheMode(WebSettings.LOAD_DEFAULT);
+        if(savedInstanceState == null) {
+            webSettings.setJavaScriptEnabled(true);
+            webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+            webSettings.setLoadsImagesAutomatically(true);
+            webSettings.setLayoutAlgorithm(WebSettings.LayoutAlgorithm.TEXT_AUTOSIZING);
+            webSettings.setLoadWithOverviewMode(true);
+            webSettings.setSafeBrowsingEnabled(false);
+            webSettings.setUseWideViewPort(true);
+            webSettings.setDomStorageEnabled(true);
+            webSettings.setSupportZoom(false);
+            webSettings.setDefaultTextEncodingName("utf-8");
+            webSettings.setAllowFileAccess(true);
+            webSettings.setSaveFormData(true);
+            webSettings.setAppCacheEnabled(true);
+            webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
             webView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
             webView.setBackgroundColor(Color.TRANSPARENT);
-            webView.clearCache(true);
+            webView.clearCache(false);
+            webSettings.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
             webView.clearHistory();
-//            webView.getSettings().setUserAgentString("MoodofWood");
+//            webSettings.setUserAgentString(String);
 
             checkConnection();
         }
@@ -198,13 +198,19 @@ public class MainActivity extends AppCompatActivity {
                     startActivity(intent);
                     return true;
                 }
-                checkConnection();
                 view.loadUrl(Url);
                 return false;
             }
         });
 
         webView.setWebChromeClient(new WebChromeClient(){
+
+            @Override
+            public boolean onJsAlert(WebView view, String url, String message, JsResult result){
+                Log.e("alert triggered", message);
+                return false;
+            }
+
             @Override
             public void onProgressChanged(WebView view, int newProgress){
                 progressBarWeb.setVisibility(View.VISIBLE);
@@ -265,6 +271,7 @@ public class MainActivity extends AppCompatActivity {
                 this.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo wifi = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
         NetworkInfo mobileNetwork = connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        String webUrl = "https://moodofwood.in";
         if(wifi.isConnected()){
             webView.loadUrl (webUrl);
             webView.setVisibility(View.VISIBLE);
@@ -308,8 +315,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    protected  void onSaveInstanceState(Bundle outState){
-        super.onSaveInstanceState(outState);
-        webView.saveState(outState);
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            Toast.makeText(this, "landscape", Toast.LENGTH_SHORT).show();
+        } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT){
+            Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
+        }
     }
 }
